@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "708297621387",
+    "project_id": "basic-crud-2f78a",
+    "storage_bucket": "basic-crud-2f78a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708297621387:android:6d27c97d8eedf2d826f98e",
+        "android_client_info": {
+          "package_name": "com.example.flutter_crud_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtJHUxyfWgAVTC0l3Qo1pfN6dgjKsk36Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708297621387:android:74f357398591af2826f98e",
+        "android_client_info": {
+          "package_name": "com.example.music_player_v1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtJHUxyfWgAVTC0l3Qo1pfN6dgjKsk36Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
