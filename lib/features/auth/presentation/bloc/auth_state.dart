@@ -16,3 +16,4 @@ final class AuthFailure extends AuthState{
   final Failure failure ;
   AuthFailure(this.failure);
 }
+

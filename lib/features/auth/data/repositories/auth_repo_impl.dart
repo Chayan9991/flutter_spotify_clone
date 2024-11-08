@@ -2,8 +2,10 @@ import 'package:dartz/dartz.dart';
 import 'package:music_player_v1/core/common/entities/user.dart';
 import 'package:music_player_v1/core/error/server_exception.dart';
 import 'package:music_player_v1/features/auth/data/datasources/auth_firebase_datasource.dart';
+import 'package:music_player_v1/features/auth/data/model/user_model.dart';
 import 'package:music_player_v1/features/auth/domain/repository/auth_repository.dart';
 import 'package:music_player_v1/service_locator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/error/failures.dart';
 import '../datasources/auth_supabase_datasource.dart';
@@ -38,7 +40,6 @@ class AuthRepoImpl implements AuthRepository {
   Future<Either<Failure, UserEntity>> signIn(
       {required String email, required String password}) async {
     try {
-
       final user = await authSupabaseDatasource.signInWithEmailPassword(
           email: email, password: password);
       return Right(UserEntity(email: user.email, name: user.name, id: user.id));
@@ -54,13 +55,19 @@ class AuthRepoImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> currentUser() async {
-    try {
-      final user =
-          await serviceLocator<AuthFirebaseDatasource>().getCurrentUser();
+  Future<Either<Failure, UserEntity>> currentUser() async{
+    try{
+     // final user =await serviceLocator<AuthFirebaseDatasource>().getCurrentUser();  //Firebase Method
+      final user =await authSupabaseDatasource.getCurrentUser() ;
       return Right(UserEntity(id: user.id, email: user.email, name: user.name));
-    } on ServerException catch (e) {
+    }on ServerException catch (e){
       return Left(Failure(e.message));
     }
   }
+
+  @override
+  Future<void> userLogout() async{
+    await authSupabaseDatasource.userLogout() ;
+  }
+
 }

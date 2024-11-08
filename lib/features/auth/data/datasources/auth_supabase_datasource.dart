@@ -13,6 +13,7 @@ abstract interface class AuthSupabaseDatasource {
       {required String email, required String password});
 
   Future<UserModel> getCurrentUser();
+  Future<void> userLogout();
 }
 
 class AuthSupabaseDataSourceImpl implements AuthSupabaseDatasource {
@@ -26,11 +27,9 @@ class AuthSupabaseDataSourceImpl implements AuthSupabaseDatasource {
   Future<UserModel> getCurrentUser() async{
 
     User? user = supabaseClient.auth.currentUser;
-
     if(user == null){
       throw const ServerException("No user signed in");
     }
-
     return UserModel(id: user.id, email: user.email ?? "", name: user.userMetadata?['name'] ?? "");
     
   }
@@ -68,6 +67,16 @@ class AuthSupabaseDataSourceImpl implements AuthSupabaseDatasource {
       return UserModel(
           id: user.id, email: user.email!, name: user.userMetadata?['name']);
     } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> userLogout() async{
+    try{
+     final response =  await supabaseClient.auth.signOut(scope: SignOutScope.local);
+
+    }catch(e){
       throw ServerException(e.toString());
     }
   }

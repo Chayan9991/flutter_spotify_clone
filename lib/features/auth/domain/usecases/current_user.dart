@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:music_player_v1/core/common/entities/user.dart';
 import 'package:music_player_v1/core/usecases/usecase.dart';
+import 'package:music_player_v1/features/auth/data/datasources/auth_supabase_datasource.dart';
 import 'package:music_player_v1/features/auth/domain/repository/auth_repository.dart';
 import 'package:music_player_v1/service_locator.dart';
 
@@ -14,4 +15,5 @@ class CurrentUserUseCase extends UseCase<UserEntity, NoParams> {
   Future<Either<Failure, UserEntity>> call(NoParams params) async {
     return await authRepository.currentUser();
   }
+
 }

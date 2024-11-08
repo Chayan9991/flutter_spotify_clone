@@ -1,7 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:music_player_v1/core/routes/app_routes.dart';
+import 'package:music_player_v1/features/home-page/presentation/Widgets/drawer.dart';
+import 'package:music_player_v1/features/home-page/presentation/pages/online_song_list.dart';
 import '../../../../core/common/widgets/custom_app_bar.dart';
 import '../../../../core/config/assets-config/app_images.dart';
 import '../../../../core/config/assets-config/app_vector.dart';
@@ -46,6 +49,7 @@ class _HomePageState extends State<HomePage>
         ),
         hideBackBtn: true,
       ),
+      drawer: const MyDrawer(),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +174,7 @@ class _HomePageState extends State<HomePage>
                                   shape: BoxShape.circle),
                               child: IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.play_arrow),
+                                icon: const Icon(Icons.play_arrow),
                                 color: isDarkMode(context)
                                     ? const Color(0xffE6E6E6)
                                     : AppPalette.darkGray,
@@ -212,93 +216,113 @@ class _HomePageState extends State<HomePage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Playlist title and See More button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "Playlist",
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22),
-              ),
-              GestureDetector(
-                onTap: () {
-                  // Handle "See More" action
-                },
-                child: const Text(
-                  "See More",
-                  style: TextStyle(color: AppPalette.grayColor, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16), // Space between title and playlist
+          BlocBuilder<SongCubit, SongState>(
+            builder: (context, state) {
+              if (state is SongLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is SongFetch) {
+                final songs = state.songs;
 
-          // Playlist items
-          BlocBuilder<SongCubit, SongState>(builder: (context, state) {
-            if (state is SongLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is SongFetch) {
-              final songs = state.songs;
-
-              // Limit the number of songs shown to 2
-              return ListView.builder(
-                itemCount: songs.length > 2 ? 2 : songs.length,
-                shrinkWrap: true, // Ensures ListView only takes as much space as needed
-                physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Playlist title and See More button
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Play Icon and Song Details
-                        Row(
-                          children: [
-                            Icon(Icons.play_arrow, color: AppPalette.grayColor),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  songs[index].title,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                                Text(
-                                  songs[index].artist,
-                                  style: const TextStyle(
-                                      color: AppPalette.grayColor, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ],
+                        const Text(
+                          "Playlist",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 22,
+                              color: AppPalette.primary),
                         ),
-                        Row(
-                          children: [
-                            Text(
-                              songs[index].duration,
-                              style: TextStyle(color: AppPalette.grayColor),
-                            ),
-                            const SizedBox(width: 10),
-                            Icon(Icons.favorite_border, color: AppPalette.grayColor),
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            AppRoutes.push(
+                              context,
+                              OnlineSongList(
+                                  songs: songs), // Pass songs to AllSongList
+                            );
+                          },
+                          child: const Text(
+                            "All Songs",
+                            style: TextStyle(
+                                color: AppPalette.primary, fontSize: 13),
+                          ),
                         ),
                       ],
                     ),
-                  );
-                },
-              );
-            } else {
-              return const Center(
-                child: Text("No songs available"),
-              );
-            }
-          }),
+                    const SizedBox(height: 16),
+                    // Space between title and playlist
+
+                    // Display only 2 playlist items
+                    ListView.builder(
+                      itemCount: songs.length > 2 ? 2 : songs.length,
+                      shrinkWrap: true,
+                      // Ensures ListView only takes as much space as needed
+                      physics: const NeverScrollableScrollPhysics(),
+                      // Disable ListView scrolling
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Play Icon and Song Details
+                              Row(
+                                children: [
+                                  const Icon(Icons.play_arrow,
+                                      color: AppPalette.grayColor),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        songs[index].title,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      Text(
+                                        songs[index].artist,
+                                        style: const TextStyle(
+                                            color: AppPalette.grayColor,
+                                            fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    songs[index].duration,
+                                    style: const TextStyle(
+                                        color: AppPalette.grayColor),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Icon(Icons.favorite_border,
+                                      color: AppPalette.grayColor),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: Text("No songs available"),
+                );
+              }
+            },
+          ),
         ],
       ),
     );
   }
-
 }
